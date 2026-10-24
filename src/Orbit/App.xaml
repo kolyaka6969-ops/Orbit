@@ -1,0 +1,22 @@
+<Application x:Class="Orbit.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             ShutdownMode="OnExplicitShutdown">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- [0] — светлая или тёмная тема, её подменяет ThemeManager. -->
+                <ResourceDictionary Source="Themes/Light.xaml" />
+                <ResourceDictionary Source="Themes/Controls.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <!-- Значения по умолчанию; настоящий акцент Windows подставляет ThemeManager. -->
+            <Color x:Key="AccentColor">#005FB8</Color>
+            <SolidColorBrush x:Key="AccentBrush" Color="#005FB8" />
+            <SolidColorBrush x:Key="AccentHoverBrush" Color="#E6005FB8" />
+            <SolidColorBrush x:Key="AccentPressedBrush" Color="#CC005FB8" />
+            <SolidColorBrush x:Key="AccentSubtleBrush" Color="#26005FB8" />
+            <SolidColorBrush x:Key="AccentTextBrush" Color="#003E92" />
+            <SolidColorBrush x:Key="TextOnAccent" Color="White" />
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
