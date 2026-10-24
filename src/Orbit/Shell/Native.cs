@@ -164,6 +164,18 @@ internal static class Native
     private static extern int GetWindowText(IntPtr hWnd, StringBuilder text, int count);
 
     [DllImport("user32.dll")]
+    public static extern IntPtr WindowFromPoint(POINT point);
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr GetAncestor(IntPtr hwnd, uint gaFlags);
+
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    private static extern int GetClassName(IntPtr hWnd, StringBuilder className, int maxCount);
+
+    [DllImport("user32.dll")]
+    private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
+
+    [DllImport("user32.dll")]
     public static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk);
 
     [DllImport("user32.dll")]
@@ -205,6 +217,35 @@ internal static class Native
         var sb = new StringBuilder(512);
         GetWindowText(hwnd, sb, sb.Capacity);
         return sb.ToString();
+    }
+
+    /// <summary>Окно верхнего уровня, которому принадлежит точка экрана.</summary>
+    public static IntPtr RootWindowAt(POINT pt)
+    {
+        var hwnd = WindowFromPoint(pt);
+        return hwnd == IntPtr.Zero ? IntPtr.Zero : GetAncestor(hwnd, 2 /* GA_ROOT */);
+    }
+
+    /// <summary>Рабочий стол или окно Проводника (а не какое-то другое приложение).</summary>
+    public static bool IsDesktopOrExplorer(IntPtr hwnd)
+    {
+        if (hwnd == IntPtr.Zero)
+            return false;
+        var sb = new StringBuilder(64);
+        GetClassName(hwnd, sb, sb.Capacity);
+        if (sb.ToString() is not ("Progman" or "WorkerW" or "CabinetWClass" or "ExploreWClass"))
+            return false;
+        // Классы окон может повторить любая программа — проверяем, что окно действительно принадлежит explorer.exe.
+        GetWindowThreadProcessId(hwnd, out var pid);
+        try
+        {
+            using var process = System.Diagnostics.Process.GetProcessById((int)pid);
+            return string.Equals(process.ProcessName, "explorer", StringComparison.OrdinalIgnoreCase);
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     /// <summary>Переводит окно на передний план, даже если сейчас активно другое приложение.</summary>

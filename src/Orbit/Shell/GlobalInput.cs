@@ -6,7 +6,7 @@ namespace Orbit.Shell;
 
 /// <summary>
 /// Глобальные хуки мыши и клавиатуры в отдельном потоке. Ловит жест «во время перетаскивания нажали и отпустили
-/// Shift / Ctrl / Alt» и передаёт события в UI-поток.
+/// Shift / Ctrl / Alt» (только если тянут с рабочего стола или из Проводника) и передаёт события в UI-поток.
 /// </summary>
 internal sealed class GlobalInput : IDisposable
 {
@@ -196,7 +196,12 @@ internal sealed class GlobalInput : IDisposable
                         break;
                     case Native.WM_MOUSEMOVE when _leftDown && !_dragging:
                         if (Math.Abs(pt.X - _downAt.X) > _dragX || Math.Abs(pt.Y - _downAt.Y) > _dragY)
-                            _dragging = true;
+                        {
+                            // Жест работает, только когда тянут с рабочего стола или из Проводника: в других
+                            // приложениях Shift / Ctrl / Alt при перетаскивании значат своё. Проверяем один раз за жест.
+                            _leftDown = false;
+                            _dragging = Native.IsDesktopOrExplorer(Native.RootWindowAt(_downAt));
+                        }
                         break;
                     case Native.WM_LBUTTONUP:
                         _leftDown = false;

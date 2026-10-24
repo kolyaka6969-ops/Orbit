@@ -1,7 +1,8 @@
 # Orbit
 
-Конвертер файлов с круговым меню для Windows 11. Начните перетаскивать файл, нажмите и отпустите
-**Shift**, **Ctrl** или **Alt** — под курсором появится круг. Отпустите файл на нужном действии.
+Конвертер файлов с круговым меню для Windows 11. Начните перетаскивать файл с рабочего стола или из Проводника,
+нажмите и отпустите **Shift**, **Ctrl** или **Alt** — под курсором появится круг. Отпустите файл на нужном действии.
+В других приложениях эти клавиши при перетаскивании работают как обычно — Orbit их не трогает.
 
 <p align="center">
   <img src="docs/wheel-tools-light.png" width="40%" alt="Круг инструментов, светлая тема" />
@@ -12,8 +13,8 @@
 
 | Версия | Для какой Windows |
 | --- | --- |
-| **[Orbit 1.0.1](https://github.com/kolyaka6969-ops/Orbit/releases/latest/download/Orbit-1.0.1-Setup-x64.exe)** | Windows 11 и Windows 10 с последними обновлениями |
-| **[Orbit 1.0.1 для Windows 10 22H2](https://github.com/kolyaka6969-ops/Orbit/releases/latest/download/Orbit-1.0.1-Win10-22H2-Setup-x64.exe)** | Windows 10 22H2 без обновлений — если обычная версия при запуске падает с «Unknown Hard Error» |
+| **[Orbit 1.0.2](https://github.com/kolyaka6969-ops/Orbit/releases/latest/download/Orbit-1.0.2-Setup-x64.exe)** | Windows 11 и Windows 10 с последними обновлениями |
+| **[Orbit 1.0.2 для Windows 10 22H2](https://github.com/kolyaka6969-ops/Orbit/releases/latest/download/Orbit-1.0.2-Win10-22H2-Setup-x64.exe)** | Windows 10 22H2 без обновлений — если обычная версия при запуске падает с «Unknown Hard Error» |
 
 [Все релизы](https://github.com/kolyaka6969-ops/Orbit/releases). Только x64, права администратора не нужны.
 Версии ставятся друг поверх друга, настройки сохраняются.
@@ -62,7 +63,7 @@
 
 ## Установка
 
-Запустите `Orbit-1.0.1-Setup-x64.exe` (или `Orbit-1.0.1-Win10-22H2-Setup-x64.exe` для Windows 10 22H2 без обновлений). Права администратора не нужны: программа ставится для текущего пользователя
+Запустите `Orbit-1.0.2-Setup-x64.exe` (или `Orbit-1.0.2-Win10-22H2-Setup-x64.exe` для Windows 10 22H2 без обновлений). Права администратора не нужны: программа ставится для текущего пользователя
 в `%LOCALAPPDATA%\Programs\Orbit`, добавляется в меню «Пуск» и удаляется через «Параметры → Приложения».
 Внутри уже есть всё нужное (.NET, ImageMagick), отдельно ничего ставить не надо. Нужна Windows 10 1809+ или Windows 11, x64.
 
@@ -77,7 +78,7 @@
 ```
 
 Результат: `publish/` и `publish-win10/` (папки программы, обычная и для Windows 10 22H2),
-`artifacts/Orbit-1.0.1-Setup-x64.exe` и `artifacts/Orbit-1.0.1-Win10-22H2-Setup-x64.exe` (установщики), `artifacts/SHA256SUMS.txt`.
+`artifacts/Orbit-1.0.2-Setup-x64.exe` и `artifacts/Orbit-1.0.2-Win10-22H2-Setup-x64.exe` (установщики), `artifacts/SHA256SUMS.txt`.
 Ключ `-NoInstaller` собирает только программу, `-Version 1.2.0` меняет номер версии.
 
 Проверка всех операций на тестовых файлах (картинки, голос и ролик берутся из самой Windows):
