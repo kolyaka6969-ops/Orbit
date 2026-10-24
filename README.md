@@ -10,9 +10,16 @@
 
 ## Скачать
 
-**[Orbit 1.0.0 — установщик для Windows (x64)](https://github.com/kolyaka6969-ops/Orbit/releases/latest/download/Orbit-1.0.0-Setup-x64.exe)** · [все релизы](https://github.com/kolyaka6969-ops/Orbit/releases)
+| Версия | Для какой Windows |
+| --- | --- |
+| **[Orbit 1.0.1](https://github.com/kolyaka6969-ops/Orbit/releases/latest/download/Orbit-1.0.1-Setup-x64.exe)** | Windows 11 и Windows 10 с последними обновлениями |
+| **[Orbit 1.0.1 для Windows 10 22H2](https://github.com/kolyaka6969-ops/Orbit/releases/latest/download/Orbit-1.0.1-Win10-22H2-Setup-x64.exe)** | Windows 10 22H2 без обновлений — если обычная версия при запуске падает с «Unknown Hard Error» |
 
-Windows 10 1809+ или Windows 11, права администратора не нужны.
+[Все релизы](https://github.com/kolyaka6969-ops/Orbit/releases). Только x64, права администратора не нужны.
+Версии ставятся друг поверх друга, настройки сохраняются.
+
+Версия для Windows 10 22H2 собрана без защиты стека CET: в Windows 10 без обновлений 2023 года .NET с ней не
+запускается ([dotnet/runtime#110000](https://github.com/dotnet/runtime/issues/110000)). Больше она ничем не отличается.
 
 ## Как пользоваться
 
@@ -55,7 +62,7 @@ Windows 10 1809+ или Windows 11, права администратора не
 
 ## Установка
 
-Запустите `Orbit-1.0.0-Setup-x64.exe`. Права администратора не нужны: программа ставится для текущего пользователя
+Запустите `Orbit-1.0.1-Setup-x64.exe` (или `Orbit-1.0.1-Win10-22H2-Setup-x64.exe` для Windows 10 22H2 без обновлений). Права администратора не нужны: программа ставится для текущего пользователя
 в `%LOCALAPPDATA%\Programs\Orbit`, добавляется в меню «Пуск» и удаляется через «Параметры → Приложения».
 Внутри уже есть всё нужное (.NET, ImageMagick), отдельно ничего ставить не надо. Нужна Windows 10 1809+ или Windows 11, x64.
 
@@ -69,7 +76,8 @@ Windows 10 1809+ или Windows 11, права администратора не
 ./build.ps1
 ```
 
-Результат: `publish/Orbit.exe` (папка программы) и `artifacts/Orbit-1.0.0-Setup-x64.exe` (установщик).
+Результат: `publish/` и `publish-win10/` (папки программы, обычная и для Windows 10 22H2),
+`artifacts/Orbit-1.0.1-Setup-x64.exe` и `artifacts/Orbit-1.0.1-Win10-22H2-Setup-x64.exe` (установщики), `artifacts/SHA256SUMS.txt`.
 Ключ `-NoInstaller` собирает только программу, `-Version 1.2.0` меняет номер версии.
 
 Проверка всех операций на тестовых файлах (картинки, голос и ролик берутся из самой Windows):

@@ -1,6 +1,7 @@
 bin/
 obj/
 publish/
+publish-win10/
 artifacts/
 *.user
 .vs/

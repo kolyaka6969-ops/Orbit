@@ -53,15 +53,16 @@ internal sealed class WheelController
 
     private void OnModifierTapped(ModifierKey key)
     {
-        if (_settings.Paused || _settings.WheelFor(key) is not { } wheel)
-            return;
         if (_wheel is { IsFinished: false } open)
         {
-            open.SwitchTo(wheel);
+            if (!_settings.Paused && _settings.WheelFor(key) is { } next)
+                open.SwitchTo(next);
             return;
         }
-        if (_input.IsDragging)
+        if (!_settings.Paused && _settings.WheelFor(key) is { } wheel && _input.IsDragging)
             Open(WheelMode.Drag, wheel, null, _input.Cursor);
+        else
+            _input.WheelActive = _wheel is not null;
     }
 
     /// <summary>Ctrl + Alt + Пробел: файлы, выделенные в Проводнике (или скопированные в буфер обмена).</summary>
@@ -111,10 +112,13 @@ internal sealed class WheelController
         var window = new WheelWindow(mode, wheel, items, OperationsFor, (op, targets) => _jobs.Start(op, targets));
         window.Closed += (_, _) =>
         {
-            if (ReferenceEquals(_wheel, window))
-                _wheel = null;
+            if (!ReferenceEquals(_wheel, window))
+                return;
+            _wheel = null;
+            _input.WheelActive = false;
         };
         _wheel = window;
+        _input.WheelActive = true;
         window.ShowAt(at);
         if (mode == WheelMode.Click)
             Native.ForceForeground(new System.Windows.Interop.WindowInteropHelper(window).Handle);

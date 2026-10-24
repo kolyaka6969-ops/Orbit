@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using Orbit.Core;
@@ -21,7 +22,9 @@ public partial class SettingsWindow : Window
         InitializeComponent();
 
         var version = typeof(App).Assembly.GetName().Version ?? new Version(1, 0, 0);
-        VersionText.Text = $"Версия {version.Major}.{version.Minor}.{version.Build}";
+        // Отдельная сборка для Windows 10 без обновлений помечена в Orbit.csproj.
+        var edition = typeof(App).Assembly.GetCustomAttributes<AssemblyMetadataAttribute>().FirstOrDefault(a => a.Key == "Edition")?.Value;
+        VersionText.Text = $"Версия {version.Major}.{version.Minor}.{version.Build}" + (edition is null ? "" : $" для {edition}");
         AboutTitle.Text = $"Orbit {version.Major}.{version.Minor}";
         FormatList.ItemsSource = FormatRows();
         Load();

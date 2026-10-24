@@ -19,6 +19,7 @@ internal static class ThemeManager
     private const int DWMSBT_MAINWINDOW = 2; // Mica
 
     private static ThemeChoice _choice;
+    private static (bool Dark, Color Accent, Color Text)? _applied;
     private static readonly UISettings UiSettings = new();
 
     public static bool IsDark { get; private set; }
@@ -44,19 +45,25 @@ internal static class ThemeManager
     public static void Apply(ThemeChoice choice)
     {
         _choice = choice;
-        IsDark = choice switch
+        var dark = choice switch
         {
             ThemeChoice.Dark => true,
             ThemeChoice.Light => false,
             _ => SystemUsesDarkTheme(),
         };
+        var (accent, text) = AccentColors(dark);
+        // Windows шлёт «настройки изменились» по множеству поводов; перекрашиваем, только если что-то правда поменялось.
+        if (_applied == (dark, accent, text))
+            return;
+        _applied = (dark, accent, text);
+        IsDark = dark;
 
         var resources = Application.Current.Resources;
         resources.MergedDictionaries[0] = new ResourceDictionary
         {
             Source = new Uri($"pack://application:,,,/Orbit;component/Themes/{(IsDark ? "Dark" : "Light")}.xaml"),
         };
-        ApplyAccent(resources);
+        ApplyAccent(resources, accent, text);
 
         foreach (Window window in Application.Current.Windows)
         {
@@ -73,22 +80,25 @@ internal static class ThemeManager
         return key?.GetValue("AppsUseLightTheme") is int light && light == 0;
     }
 
-    private static void ApplyAccent(ResourceDictionary resources)
+    private static (Color Accent, Color Text) AccentColors(bool dark)
     {
-        Color accent, text;
         try
         {
             // Как в WinUI: в светлой теме — тёмный оттенок акцента, в тёмной — светлый.
-            var value = UiSettings.GetColorValue(IsDark ? UIColorType.AccentLight2 : UIColorType.AccentDark1);
-            accent = Color.FromRgb(value.R, value.G, value.B);
-            var textValue = UiSettings.GetColorValue(IsDark ? UIColorType.AccentLight3 : UIColorType.AccentDark2);
-            text = Color.FromRgb(textValue.R, textValue.G, textValue.B);
+            var value = UiSettings.GetColorValue(dark ? UIColorType.AccentLight2 : UIColorType.AccentDark1);
+            var textValue = UiSettings.GetColorValue(dark ? UIColorType.AccentLight3 : UIColorType.AccentDark2);
+            return (Color.FromRgb(value.R, value.G, value.B), Color.FromRgb(textValue.R, textValue.G, textValue.B));
         }
         catch (Exception)
         {
-            accent = IsDark ? Color.FromRgb(0x60, 0xCD, 0xFF) : Color.FromRgb(0x00, 0x5F, 0xB8);
-            text = IsDark ? Color.FromRgb(0x99, 0xEB, 0xFF) : Color.FromRgb(0x00, 0x3E, 0x92);
+            return dark
+                ? (Color.FromRgb(0x60, 0xCD, 0xFF), Color.FromRgb(0x99, 0xEB, 0xFF))
+                : (Color.FromRgb(0x00, 0x5F, 0xB8), Color.FromRgb(0x00, 0x3E, 0x92));
         }
+    }
+
+    private static void ApplyAccent(ResourceDictionary resources, Color accent, Color text)
+    {
         resources["AccentColor"] = accent;
         resources["AccentBrush"] = Frozen(accent);
         resources["AccentHoverBrush"] = Frozen(Color.FromArgb(0xE6, accent.R, accent.G, accent.B));

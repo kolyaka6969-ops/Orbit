@@ -20,7 +20,10 @@ internal sealed class GlobalInput : IDisposable
 
     private bool _leftDown;
     private Native.POINT _downAt;
+    private int _dragX;
+    private int _dragY;
     private volatile bool _dragging;
+    private volatile bool _wheelActive;
     private ModifierKey _pending;
     private int _x;
     private int _y;
@@ -46,6 +49,16 @@ internal sealed class GlobalInput : IDisposable
     public Func<ModifierKey, bool>? IsWheelKey { get; set; }
 
     public bool IsDragging => _dragging;
+
+    /// <summary>
+    /// Нужны ли круговому меню щелчки, отпускание кнопки и Esc. Пока круг закрыт, хук не будит из-за них UI-поток.
+    /// Включается и самим хуком в момент жеста, чтобы отпускание кнопки сразу после него не потерялось.
+    /// </summary>
+    public bool WheelActive
+    {
+        get => _wheelActive;
+        set => _wheelActive = value;
+    }
 
     public Native.POINT Cursor => new() { X = Volatile.Read(ref _x), Y = Volatile.Read(ref _y) };
 
@@ -102,10 +115,12 @@ internal sealed class GlobalInput : IDisposable
         {
             try
             {
-                var data = Marshal.PtrToStructure<Native.KBDLLHOOKSTRUCT>(lParam);
+                // KBDLLHOOKSTRUCT: vkCode — смещение 0, flags — 8. Читаем поля напрямую, без маршалинга всей структуры.
+                var vk = (uint)Marshal.ReadInt32(lParam);
+                var flags = (uint)Marshal.ReadInt32(lParam, 8);
                 // Синтетические нажатия (наши и чужие) не считаются: жест делает человек.
-                if ((data.flags & Native.LLKHF_INJECTED) == 0)
-                    OnKey(data.vkCode, (int)wParam is Native.WM_KEYDOWN or Native.WM_SYSKEYDOWN);
+                if ((flags & Native.LLKHF_INJECTED) == 0)
+                    OnKey(vk, (int)wParam is Native.WM_KEYDOWN or Native.WM_SYSKEYDOWN);
             }
             catch
             {
@@ -123,7 +138,7 @@ internal sealed class GlobalInput : IDisposable
             if (modifier == ModifierKey.None)
             {
                 _pending = ModifierKey.None;
-                if (vk == 0x1B)
+                if (vk == 0x1B && _wheelActive)
                     _dispatcher.BeginInvoke(() => EscapePressed?.Invoke());
                 return;
             }
@@ -143,7 +158,10 @@ internal sealed class GlobalInput : IDisposable
         {
             _pending = ModifierKey.None;
             if (_dragging)
+            {
+                _wheelActive = true;
                 _dispatcher.BeginInvoke(() => ModifierTapped?.Invoke(modifier));
+            }
         }
         else if (modifier == ModifierKey.None)
         {
@@ -157,31 +175,34 @@ internal sealed class GlobalInput : IDisposable
         {
             try
             {
-                var data = Marshal.PtrToStructure<Native.MSLLHOOKSTRUCT>(lParam);
-                Volatile.Write(ref _x, data.pt.X);
-                Volatile.Write(ref _y, data.pt.Y);
+                // Хук вызывается на каждое движение мыши во всей системе, поэтому здесь ничего лишнего:
+                // MSLLHOOKSTRUCT.pt читаем напрямую (смещения 0 и 4), в UI-поток уходят только нужные кругу события.
+                var pt = new Native.POINT { X = Marshal.ReadInt32(lParam), Y = Marshal.ReadInt32(lParam, 4) };
+                Volatile.Write(ref _x, pt.X);
+                Volatile.Write(ref _y, pt.Y);
                 switch ((int)wParam)
                 {
                     case Native.WM_LBUTTONDOWN:
                         _leftDown = true;
                         _dragging = false;
-                        _downAt = data.pt;
-                        RaiseDown(data.pt);
+                        _downAt = pt;
+                        _dragX = Native.GetSystemMetrics(Native.SM_CXDRAG) * 2;
+                        _dragY = Native.GetSystemMetrics(Native.SM_CYDRAG) * 2;
+                        RaiseDown(pt);
                         break;
                     case Native.WM_RBUTTONDOWN:
                     case Native.WM_MBUTTONDOWN:
-                        RaiseDown(data.pt);
+                        RaiseDown(pt);
                         break;
                     case Native.WM_MOUSEMOVE when _leftDown && !_dragging:
-                        var dx = Math.Abs(data.pt.X - _downAt.X);
-                        var dy = Math.Abs(data.pt.Y - _downAt.Y);
-                        if (dx > Native.GetSystemMetrics(Native.SM_CXDRAG) * 2 || dy > Native.GetSystemMetrics(Native.SM_CYDRAG) * 2)
+                        if (Math.Abs(pt.X - _downAt.X) > _dragX || Math.Abs(pt.Y - _downAt.Y) > _dragY)
                             _dragging = true;
                         break;
                     case Native.WM_LBUTTONUP:
                         _leftDown = false;
                         _dragging = false;
-                        _dispatcher.BeginInvoke(() => LeftButtonUp?.Invoke());
+                        if (_wheelActive)
+                            _dispatcher.BeginInvoke(() => LeftButtonUp?.Invoke());
                         break;
                 }
             }
@@ -193,5 +214,9 @@ internal sealed class GlobalInput : IDisposable
         return Native.CallNextHookEx(IntPtr.Zero, nCode, wParam, lParam);
     }
 
-    private void RaiseDown(Native.POINT pt) => _dispatcher.BeginInvoke(() => MouseDown?.Invoke(pt));
+    private void RaiseDown(Native.POINT pt)
+    {
+        if (_wheelActive)
+            _dispatcher.BeginInvoke(() => MouseDown?.Invoke(pt));
+    }
 }

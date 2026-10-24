@@ -70,18 +70,18 @@ public partial class App : Application
         ExplorerIntegration.RefreshPath();
 
         _jobs = new JobRunner(Settings, Dispatcher);
-        _flyout = new JobsFlyout(_jobs);
+        // Панель создаётся при первом показе: в фоне (автозапуск) она может так и не понадобиться.
         _jobs.Started += job =>
         {
             if (Settings.ShowNotifications || job.State == JobState.Info)
-                _flyout.ShowPanel();
+                (_flyout ??= new JobsFlyout(_jobs)).ShowPanel();
         };
         _jobs.Finished += job =>
         {
             if (Settings.ShowNotifications || job.State == JobState.Failed)
-                _flyout.ShowPanel();
+                (_flyout ??= new JobsFlyout(_jobs)).ShowPanel();
             else
-                _flyout.ScheduleHide();
+                _flyout?.ScheduleHide();
         };
 
         _input = new GlobalInput(Dispatcher);

@@ -1,18 +1,32 @@
-; Установщик Orbit (Inno Setup 6). Собирается из build.ps1:  iscc /DAppVersion=1.0.0 installer\Orbit.iss
+; Установщик Orbit (Inno Setup 6). Собирается из build.ps1:  iscc /DAppVersion=1.0.1 [/DEdition=Win10] installer\Orbit.iss
 ; Ставится для текущего пользователя, без прав администратора — как приложения из Microsoft Store.
+; Edition=Win10 — версия для Windows 10 без обновлений (из publish-win10, см. Orbit.csproj). AppId общий: версии
+; ставятся друг поверх друга, а не рядом.
 
 #ifndef AppVersion
-  #define AppVersion "1.0.0"
+  #define AppVersion "1.0.1"
+#endif
+#ifndef Edition
+  #define Edition ""
+#endif
+#if Edition == "Win10"
+  #define SourceDir "..\publish-win10"
+  #define FileSuffix "-Win10-22H2"
+  #define EditionTitle " (Windows 10 22H2)"
+#else
+  #define SourceDir "..\publish"
+  #define FileSuffix ""
+  #define EditionTitle ""
 #endif
 
 [Setup]
 AppId={{5E0C2B7A-3A41-4C59-9D0B-6E2E0B7C9A11}
 AppName=Orbit
 AppVersion={#AppVersion}
-AppVerName=Orbit {#AppVersion}
+AppVerName=Orbit {#AppVersion}{#EditionTitle}
 AppPublisher=Orbit
 VersionInfoVersion={#AppVersion}
-VersionInfoDescription=Установщик Orbit
+VersionInfoDescription=Установщик Orbit{#EditionTitle}
 DefaultDirName={localappdata}\Programs\Orbit
 DefaultGroupName=Orbit
 DisableProgramGroupPage=yes
@@ -22,10 +36,10 @@ MinVersion=10.0.17763
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 OutputDir=..\artifacts
-OutputBaseFilename=Orbit-{#AppVersion}-Setup-x64
+OutputBaseFilename=Orbit-{#AppVersion}{#FileSuffix}-Setup-x64
 SetupIconFile=..\src\Orbit\Assets\Orbit.ico
 UninstallDisplayIcon={app}\Orbit.exe
-UninstallDisplayName=Orbit
+UninstallDisplayName=Orbit{#EditionTitle}
 Compression=lzma2/ultra64
 SolidCompression=yes
 WizardStyle=modern dynamic
@@ -54,7 +68,7 @@ Name: "contextmenu"; Description: "{cm:ContextMenu}"; GroupDescription: "{cm:Int
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "..\publish\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdirs ignoreversion
+Source: "{#SourceDir}\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdirs ignoreversion
 
 [Icons]
 Name: "{userprograms}\Orbit"; Filename: "{app}\Orbit.exe"

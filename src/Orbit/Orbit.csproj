@@ -5,28 +5,60 @@
     <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
     <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
     <UseWPF>true</UseWPF>
-    <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AssemblyName>Orbit</AssemblyName>
     <RootNamespace>Orbit</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Assets\Orbit.ico</ApplicationIcon>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <Product>Orbit</Product>
     <Description>Конвертер файлов с круговым меню для Windows 11</Description>
     <Copyright>© 2026 Orbit</Copyright>
     <SatelliteResourceLanguages>ru;en</SatelliteResourceLanguages>
-    <!-- Проводник отдаёт выделение через COM (Shell.Application), а WPF/WinForms не обрезаются. -->
+    <!-- Проводник отдаёт выделение через COM (Shell.Application). -->
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
-    <!-- DPI задаётся в app.manifest намеренно: это WPF-приложение, WinForms нужен только для значка в трее. -->
-    <NoWarn>$(NoWarn);WFO0003</NoWarn>
+  </PropertyGroup>
+
+  <!--
+    Версия для Windows 10 без обновлений (build.ps1 собирает её с -p:OrbitEdition=Win10): без отметки совместимости
+    с CET (теневым стеком). На Windows 10 без исправления ядра 2023 года .NET с включённым CET падает при запуске
+    с «Unknown Hard Error» / 0x80131506 (https://github.com/dotnet/runtime/issues/110000). Промежуточные файлы —
+    в своей папке, чтобы две версии не смешивались при сборке подряд.
+  -->
+  <PropertyGroup Condition="'$(OrbitEdition)' == 'Win10'">
+    <CETCompat>false</CETCompat>
+    <IntermediateOutputPath>obj\$(Configuration)-Win10\</IntermediateOutputPath>
+    <OutputPath>bin\$(Configuration)-Win10\</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(OrbitEdition)' == 'Win10'">
+    <!-- Подпись версии в настройках: «Версия 1.0.1 для Windows 10 22H2». -->
+    <AssemblyMetadata Include="Edition" Value="Windows 10 22H2" />
+  </ItemGroup>
+
+  <!--
+    Обрезается только проекция Windows SDK (Microsoft.Windows.SDK.NET, ~24 МБ, рассчитана на обрезку): из неё нужны
+    Media Foundation, PDF, OCR и UISettings. Все остальные сборки (WPF, .NET, Magick.NET, PDFsharp…) — корневые и
+    копируются как есть, поэтому рефлексия XAML, dynamic и COM работают так же, как без обрезки.
+  -->
+  <PropertyGroup>
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>partial</TrimMode>
+    <_SuppressWpfTrimError>true</_SuppressWpfTrimError>
+    <SuppressTrimAnalysisWarnings>true</SuppressTrimAnalysisWarnings>
+    <!-- Те же значения, что и без обрезки: обрезка не должна менять поведение. -->
+    <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
+    <CustomResourceTypesSupport>true</CustomResourceTypesSupport>
+    <StartupHookSupport>true</StartupHookSupport>
+    <_DefaultValueAttributeSupport>true</_DefaultValueAttributeSupport>
+    <_DesignerHostSupport>true</_DesignerHostSupport>
+    <_ComObjectDescriptorSupport>true</_ComObjectDescriptorSupport>
+    <_DataSetXmlSerializationSupport>true</_DataSetXmlSerializationSupport>
+    <EnableGeneratedComInterfaceComImportInterop>true</EnableGeneratedComInterfaceComImportInterop>
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- WinForms нужен только для значка в трее и диалога выбора папки. -->
-    <Using Remove="System.Windows.Forms" />
-    <Using Remove="System.Drawing" />
     <Using Include="System.IO" />
   </ItemGroup>
 
@@ -40,5 +72,29 @@
     <Resource Include="Assets\Orbit.ico" />
     <Resource Include="Assets\Orbit.png" />
   </ItemGroup>
+
+  <!--
+    Файлы среды выполнения, которые нужны только отладчику и снятию дампов (DAC, mscordbi, DiaSymReader, createdump).
+    Сама программа их не загружает; без них публикация меньше на ~7 МБ.
+  -->
+  <Target Name="TrimOnlyWindowsSdkProjection" AfterTargets="PrepareForILLink">
+    <ItemGroup>
+      <TrimmerRootAssembly Include="@(ManagedAssemblyToLink->'%(Filename)')" Condition="'%(Filename)' != 'Microsoft.Windows.SDK.NET'" />
+      <ManagedAssemblyToLink Condition="'%(Filename)' != 'Microsoft.Windows.SDK.NET'">
+        <TrimMode>copy</TrimMode>
+      </ManagedAssemblyToLink>
+      <ManagedAssemblyToLink Condition="'%(Filename)' == 'Microsoft.Windows.SDK.NET'">
+        <IsTrimmable>true</IsTrimmable>
+        <TrimMode>link</TrimMode>
+      </ManagedAssemblyToLink>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="DropDebuggerOnlyRuntimeFiles" AfterTargets="ComputeResolvedFilesToPublishList">
+    <ItemGroup>
+      <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)"
+        Condition="'%(Filename)%(Extension)' == 'createdump.exe' or '%(Filename)%(Extension)' == 'mscordbi.dll' or '%(Filename)%(Extension)' == 'Microsoft.DiaSymReader.Native.amd64.dll' or $([System.String]::Copy('%(Filename)').StartsWith('mscordaccore'))" />
+    </ItemGroup>
+  </Target>
 
 </Project>

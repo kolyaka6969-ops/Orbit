@@ -1,6 +1,6 @@
 using System.Windows;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
+using System.Windows.Threading;
 
 namespace Orbit.UI;
 
@@ -13,17 +13,26 @@ public sealed class WheelPreview : FrameworkElement
         DependencyProperty.Register(nameof(Highlight), typeof(double), typeof(WheelPreview),
             new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.AffectsRender));
 
+    // Сектор меняется скачком раз в 1,2 с. Бесконечная анимация держала бы цикл отрисовки WPF на 60 кадрах в секунду,
+    // а таймер будит программу только в момент смены и стоит, пока круг не виден (другая страница, окно свёрнуто).
+    private readonly DispatcherTimer _cycle = new() { Interval = TimeSpan.FromSeconds(1.2) };
+
     public WheelPreview()
     {
-        Loaded += (_, _) =>
+        _cycle.Tick += (_, _) => Highlight = (Highlight + 1) % Labels.Length;
+        Loaded += (_, _) => ThemeManager.Changed += InvalidateVisual;
+        Unloaded += (_, _) =>
         {
-            ThemeManager.Changed += InvalidateVisual;
-            var cycle = new DoubleAnimationUsingKeyFrames { RepeatBehavior = RepeatBehavior.Forever, Duration = TimeSpan.FromSeconds(Labels.Length * 1.2) };
-            for (var i = 0; i < Labels.Length; i++)
-                cycle.KeyFrames.Add(new DiscreteDoubleKeyFrame(i, KeyTime.FromTimeSpan(TimeSpan.FromSeconds(i * 1.2))));
-            BeginAnimation(HighlightProperty, cycle);
+            ThemeManager.Changed -= InvalidateVisual;
+            _cycle.Stop();
         };
-        Unloaded += (_, _) => ThemeManager.Changed -= InvalidateVisual;
+        IsVisibleChanged += (_, _) =>
+        {
+            if (IsVisible)
+                _cycle.Start();
+            else
+                _cycle.Stop();
+        };
     }
 
     public double Highlight
