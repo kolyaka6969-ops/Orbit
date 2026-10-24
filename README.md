@@ -13,8 +13,8 @@
 
 | Версия | Для какой Windows |
 | --- | --- |
-| **[Orbit 1.0.2](https://github.com/kolyaka6969-ops/Orbit/releases/latest/download/Orbit-1.0.2-Setup-x64.exe)** | Windows 11 и Windows 10 с последними обновлениями |
-| **[Orbit 1.0.2 для Windows 10 22H2](https://github.com/kolyaka6969-ops/Orbit/releases/latest/download/Orbit-1.0.2-Win10-22H2-Setup-x64.exe)** | Windows 10 22H2 без обновлений — если обычная версия при запуске падает с «Unknown Hard Error» |
+| **[Orbit 1.1.0](https://github.com/kolyaka6969-ops/Orbit/releases/latest/download/Orbit-1.1.0-Setup-x64.exe)** | Windows 11 и Windows 10 с последними обновлениями |
+| **[Orbit 1.1.0 для Windows 10 22H2](https://github.com/kolyaka6969-ops/Orbit/releases/latest/download/Orbit-1.1.0-Win10-22H2-Setup-x64.exe)** | Windows 10 22H2 без обновлений — если обычная версия при запуске падает с «Unknown Hard Error» |
 
 [Все релизы](https://github.com/kolyaka6969-ops/Orbit/releases). Только x64, права администратора не нужны.
 Версии ставятся друг поверх друга, настройки сохраняются.
@@ -26,7 +26,7 @@
 
 | Клавиша при перетаскивании | Круг | Что внутри |
 | --- | --- | --- |
-| **Shift** | Конвертация | PNG, JPG, WEBP, AVIF, TIFF, GIF, ICO, PDF · MP3, M4A, WAV, FLAC, WMA · MP4, WMV · PDF → картинки · распаковка архивов |
+| **Shift** | Конвертация | PNG, JPG, WEBP, AVIF, TIFF, GIF, ICO, PDF · MP3, M4A, WAV, FLAC, WMA · MP4, WMV · PDF → картинки, DOCX · документы Word → PDF, DOCX, DOC, RTF, ODT, TXT · таблицы Excel → PDF, XLSX, XLS, ODS, CSV · распаковка архивов |
 | **Ctrl** | Инструменты | сжать, уменьшить, «для интернета», повернуть, отразить, ч/б, квадрат, без метаданных, распознать текст, объединить в PDF, разделить PDF, видео 720p и без звука, ZIP, SHA-256 |
 | **Alt** | Действия | копировать путь, в буфер обмена, на рабочий стол, переместить, копия, в корзину |
 
@@ -36,6 +36,20 @@
 Исходные файлы не перезаписываются — результат сохраняется рядом (или в подпапку / выбранную папку).
 Всё работает локально и без интернета: изображения — встроенный ImageMagick, аудио и видео — кодеки Windows
 (Media Foundation), PDF — движок Windows и PDFsharp, распознавание текста — Windows OCR.
+
+### Word и Excel
+
+Документы (DOCX, DOC, DOCM, DOTX, RTF, ODT) и таблицы (XLSX, XLS, XLSM, XLSB, ODS, CSV) конвертирует одна из
+установленных программ. Какую брать, выбирается в **Настройки → Сохранение и качество → Документы**:
+
+| Программа | Что умеет |
+| --- | --- |
+| **Microsoft Office** | всё, включая PDF → DOCX; макросы из файлов не запускаются |
+| **[ArtCraft](https://getartcraft.com/apps)** — бесплатные [WordCraft](https://github.com/storytold/wordcraft) и [GridCraft](https://github.com/storytold/gridcraft) | документы → PDF, DOCX, RTF, ODT, TXT; таблицы → PDF, XLSX, CSV |
+| **[LibreOffice](https://www.libreoffice.org)** | всё, кроме PDF → DOCX |
+
+«Автоматически» берёт первую найденную в этом порядке. WordCraft и GridCraft Orbit ищет там, куда их ставит
+установщик (`Program Files\WordCraft`, `Program Files\GridCraft`), или в `PATH`, если распакована переносная версия.
 
 ## Оформление под Windows 11
 
@@ -63,7 +77,7 @@
 
 ## Установка
 
-Запустите `Orbit-1.0.2-Setup-x64.exe` (или `Orbit-1.0.2-Win10-22H2-Setup-x64.exe` для Windows 10 22H2 без обновлений). Права администратора не нужны: программа ставится для текущего пользователя
+Запустите `Orbit-1.1.0-Setup-x64.exe` (или `Orbit-1.1.0-Win10-22H2-Setup-x64.exe` для Windows 10 22H2 без обновлений). Права администратора не нужны: программа ставится для текущего пользователя
 в `%LOCALAPPDATA%\Programs\Orbit`, добавляется в меню «Пуск» и удаляется через «Параметры → Приложения».
 Внутри уже есть всё нужное (.NET, ImageMagick), отдельно ничего ставить не надо. Нужна Windows 10 1809+ или Windows 11, x64.
 
@@ -78,7 +92,7 @@
 ```
 
 Результат: `publish/` и `publish-win10/` (папки программы, обычная и для Windows 10 22H2),
-`artifacts/Orbit-1.0.2-Setup-x64.exe` и `artifacts/Orbit-1.0.2-Win10-22H2-Setup-x64.exe` (установщики), `artifacts/SHA256SUMS.txt`.
+`artifacts/Orbit-1.1.0-Setup-x64.exe` и `artifacts/Orbit-1.1.0-Win10-22H2-Setup-x64.exe` (установщики), `artifacts/SHA256SUMS.txt`.
 Ключ `-NoInstaller` собирает только программу, `-Version 1.2.0` меняет номер версии.
 
 Проверка всех операций на тестовых файлах (картинки, голос и ролик берутся из самой Windows):

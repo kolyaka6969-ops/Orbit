@@ -10,6 +10,8 @@ public enum FileKind
     Video,
     Pdf,
     Archive,
+    Document,
+    Spreadsheet,
 }
 
 public static class Formats
@@ -24,6 +26,12 @@ public static class Formats
 
     public static readonly HashSet<string> Video = Set("mp4 m4v mov mkv avi wmv webm 3gp 3g2 ts mts m2ts");
 
+    /// <summary>Документы Word и совместимые с ним.</summary>
+    public static readonly HashSet<string> Documents = Set("docx doc docm dotx dot dotm rtf odt");
+
+    /// <summary>Таблицы Excel и совместимые с ним.</summary>
+    public static readonly HashSet<string> Spreadsheets = Set("xlsx xls xlsm xlsb xltx xlt xltm ods csv");
+
     public static readonly HashSet<string> Archives = Set("zip 7z rar tar gz tgz bz2 tbz2 xz txz");
 
     public static FileKind KindOf(string extension) =>
@@ -33,6 +41,8 @@ public static class Formats
         : Video.Contains(extension) ? FileKind.Video
         : extension == "pdf" ? FileKind.Pdf
         : Archives.Contains(extension) ? FileKind.Archive
+        : Documents.Contains(extension) ? FileKind.Document
+        : Spreadsheets.Contains(extension) ? FileKind.Spreadsheet
         : FileKind.Other;
 
     /// <summary>Одно имя для синонимов: jpeg → jpg, tif → tiff.</summary>

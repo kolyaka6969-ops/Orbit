@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using Orbit.Core;
+using Orbit.Core.Backends;
 using Orbit.Shell;
 
 namespace Orbit.UI;
@@ -52,6 +53,15 @@ public partial class SettingsWindow : Window
         QualityText.Text = _settings.ImageQuality.ToString();
         VideoBox.SelectedIndex = (int)_settings.Video;
         DpiBox.SelectedIndex = _settings.PdfDpi switch { <= 96 => 0, >= 300 => 2, _ => 1 };
+        OfficeBox.SelectedIndex = (int)_settings.Office;
+        OfficeCard.Description = OfficeBackend.Installed() is { Count: > 0 } installed
+            ? "Чем конвертировать документы и таблицы. Установлено: " + string.Join(", ", installed.Select(e => e switch
+            {
+                OfficeEngine.MicrosoftOffice => "Microsoft Office",
+                OfficeEngine.ArtCraft => "ArtCraft",
+                _ => "LibreOffice",
+            })) + "."
+            : "Чем конвертировать документы и таблицы. Сейчас ничего не установлено: подойдёт бесплатный ArtCraft (getartcraft.com/apps) или LibreOffice.";
         _loading = false;
     }
 
@@ -222,6 +232,14 @@ public partial class SettingsWindow : Window
         Save();
     }
 
+    private void OnOffice(object sender, SelectionChangedEventArgs e)
+    {
+        if (_loading || OfficeBox.SelectedIndex < 0)
+            return;
+        _settings.Office = (OfficeEngine)OfficeBox.SelectedIndex;
+        Save();
+    }
+
     // ------------------------------------------------------------ о программе
 
     private void OnOpenSettingsFolder(object sender, RoutedEventArgs e)
@@ -242,7 +260,9 @@ public partial class SettingsWindow : Window
         new("", "RAW с фотокамер", Join(Formats.Raw), "→ любые форматы изображений"),
         new(Glyphs.Audio, "Аудио", Join(Formats.Audio), "→ MP3, M4A, WAV, FLAC, WMA"),
         new(Glyphs.Video, "Видео", Join(Formats.Video), "→ MP4 (H.264), WMV, MP3, M4A · сжатие, 720p, без звука"),
-        new(Glyphs.Pdf, "PDF", "pdf", "→ PNG, JPG по страницам · объединить, разделить"),
+        new(Glyphs.Pdf, "PDF", "pdf", "→ PNG, JPG по страницам, DOCX (через Word) · объединить, разделить"),
+        new(Glyphs.Document, "Документы Word", Join(Formats.Documents), "→ PDF, DOCX, DOC, RTF, ODT, TXT"),
+        new(Glyphs.Document, "Таблицы Excel", Join(Formats.Spreadsheets), "→ PDF, XLSX, XLS, ODS, CSV"),
         new(Glyphs.Zip, "Архивы", Join(Formats.Archives), "→ распаковать в папку · любые файлы и папки → ZIP"),
     ];
 

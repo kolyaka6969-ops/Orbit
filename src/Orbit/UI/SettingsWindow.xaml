@@ -217,14 +217,24 @@
                                 <ComboBoxItem Content="300 точек на дюйм — печать" Tag="300" />
                             </ComboBox>
                         </ui:SettingsCard>
+
+                        <TextBlock Text="Документы" Style="{StaticResource SectionHeader}" />
+                        <ui:SettingsCard x:Name="OfficeCard" Glyph="&#xE8A5;" Header="Word и Excel" Description="Чем конвертировать документы и таблицы.">
+                            <ComboBox x:Name="OfficeBox" SelectionChanged="OnOffice">
+                                <ComboBoxItem Content="Автоматически" />
+                                <ComboBoxItem Content="Microsoft Office" />
+                                <ComboBoxItem Content="ArtCraft (WordCraft, GridCraft)" />
+                                <ComboBoxItem Content="LibreOffice" />
+                            </ComboBox>
+                        </ui:SettingsCard>
                     </StackPanel>
 
                     <!-- ================================================ Форматы -->
                     <StackPanel x:Name="PageFormats" Visibility="Collapsed">
                         <TextBlock Text="Форматы" Style="{StaticResource TitleText}" Margin="0,0,0,8" />
                         <TextBlock Style="{StaticResource CaptionText}" FontSize="13" Margin="0,0,0,20">
-                            Всё работает без интернета и без дополнительных программ: изображения обрабатывает встроенный ImageMagick,
-                            аудио и видео — кодеки Windows, PDF — движок Windows и PDFsharp.
+                            Всё работает без интернета: изображения обрабатывает встроенный ImageMagick, аудио и видео — кодеки Windows,
+                            PDF — движок Windows и PDFsharp. Для Word и Excel нужен Microsoft Office, ArtCraft или LibreOffice.
                         </TextBlock>
                         <ItemsControl x:Name="FormatList">
                             <ItemsControl.ItemTemplate>

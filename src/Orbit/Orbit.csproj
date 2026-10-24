@@ -11,7 +11,7 @@
     <RootNamespace>Orbit</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Assets\Orbit.ico</ApplicationIcon>
-    <Version>1.0.2</Version>
+    <Version>1.1.0</Version>
     <Product>Orbit</Product>
     <Description>Конвертер файлов с круговым меню для Windows 11</Description>
     <Copyright>© 2026 Orbit</Copyright>
@@ -33,7 +33,7 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(OrbitEdition)' == 'Win10'">
-    <!-- Подпись версии в настройках: «Версия 1.0.2 для Windows 10 22H2». -->
+    <!-- Подпись версии в настройках: «Версия 1.1.0 для Windows 10 22H2». -->
     <AssemblyMetadata Include="Edition" Value="Windows 10 22H2" />
   </ItemGroup>
 

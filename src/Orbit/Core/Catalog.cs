@@ -59,6 +59,7 @@ public static class Catalog
         AddImages(ops);
         AddMedia(ops);
         AddPdf(ops);
+        AddOffice(ops);
         AddFiles(ops);
         AddActions(ops);
         return ops;
@@ -187,6 +188,10 @@ public static class Catalog
                 (item, ctx, p) => PdfBackend.ToImagesAsync(item, ctx.OutputDirFor(item), target, ctx.Settings.PdfDpi, p, ctx.Token),
                 "страницы"));
         }
+        ops.Add(PerFile("pdf.to.docx", WheelKind.Convert, "DOCX", Glyphs.Document, item => item.Kind == FileKind.Pdf,
+            async (item, ctx, p) => [await OutputPaths.ProduceAsync(ctx.OutputDirFor(item), item.BaseName, "docx",
+                tmp => OfficeBackend.PdfToWordAsync(item.Path, tmp, p, ctx.Token))],
+            "через Word"));
         ops.Add(new Operation
         {
             Id = "pdf.merge",
@@ -204,6 +209,28 @@ public static class Catalog
         });
         ops.Add(PerFile("pdf.split", WheelKind.Tools, "Разделить", Glyphs.Split, item => item.Kind == FileKind.Pdf,
             (item, ctx, p) => PdfBackend.SplitAsync(item, ctx.OutputDirFor(item), p, ctx.Token), "по страницам"));
+    }
+
+    // ---------------------------------------------------------------- Word и Excel
+
+    private static void AddOffice(List<Operation> ops)
+    {
+        foreach (var (target, subtitle) in OfficeBackend.DocumentTargets)
+        {
+            ops.Add(PerFile($"document.to.{target}", WheelKind.Convert, target.ToUpperInvariant(), target == "pdf" ? Glyphs.Pdf : Glyphs.Document,
+                item => item.Kind == FileKind.Document && item.Extension != target,
+                async (item, ctx, p) => [await OutputPaths.ProduceAsync(ctx.OutputDirFor(item), item.BaseName, target,
+                    tmp => OfficeBackend.DocumentAsync(item.Path, tmp, target, ctx.Settings.Office, p, ctx.Token))],
+                subtitle));
+        }
+        foreach (var (target, subtitle) in OfficeBackend.SpreadsheetTargets)
+        {
+            ops.Add(PerFile($"spreadsheet.to.{target}", WheelKind.Convert, target.ToUpperInvariant(), target == "pdf" ? Glyphs.Pdf : Glyphs.Document,
+                item => item.Kind == FileKind.Spreadsheet && item.Extension != target,
+                async (item, ctx, p) => [await OutputPaths.ProduceAsync(ctx.OutputDirFor(item), item.BaseName, target,
+                    tmp => OfficeBackend.SpreadsheetAsync(item.Path, tmp, target, ctx.Settings.Office, p, ctx.Token))],
+                subtitle));
+        }
     }
 
     // ---------------------------------------------------------------- архивы и любые файлы

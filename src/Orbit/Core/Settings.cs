@@ -29,6 +29,18 @@ public enum VideoQuality
     High,
 }
 
+/// <summary>Чем конвертировать документы Word и таблицы Excel.</summary>
+public enum OfficeEngine
+{
+    /// <summary>Первое, что установлено: Microsoft Office, ArtCraft, LibreOffice.</summary>
+    Auto,
+    MicrosoftOffice,
+
+    /// <summary>WordCraft и GridCraft из ArtCraft.</summary>
+    ArtCraft,
+    LibreOffice,
+}
+
 /// <summary>
 /// Настройки в %APPDATA%\Orbit\settings.json. Автозапуск и пункт контекстного меню хранятся в реестре —
 /// там их видит и Windows, и установщик.
@@ -68,6 +80,8 @@ public sealed class Settings
     public VideoQuality Video { get; set; } = VideoQuality.Balanced;
 
     public int PdfDpi { get; set; } = 150;
+
+    public OfficeEngine Office { get; set; } = OfficeEngine.Auto;
 
     public bool Welcomed { get; set; }
 

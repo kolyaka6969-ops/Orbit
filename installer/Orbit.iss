@@ -1,10 +1,10 @@
-; Установщик Orbit (Inno Setup 6). Собирается из build.ps1:  iscc /DAppVersion=1.0.2 [/DEdition=Win10] installer\Orbit.iss
+; Установщик Orbit (Inno Setup 6). Собирается из build.ps1:  iscc /DAppVersion=1.1.0 [/DEdition=Win10] installer\Orbit.iss
 ; Ставится для текущего пользователя, без прав администратора — как приложения из Microsoft Store.
 ; Edition=Win10 — версия для Windows 10 без обновлений (из publish-win10, см. Orbit.csproj). AppId общий: версии
 ; ставятся друг поверх друга, а не рядом.
 
 #ifndef AppVersion
-  #define AppVersion "1.0.2"
+  #define AppVersion "1.1.0"
 #endif
 #ifndef Edition
   #define Edition ""

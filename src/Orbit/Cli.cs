@@ -5,7 +5,8 @@ namespace Orbit;
 /// <summary>
 /// Режим без интерфейса для проверки и автоматизации:
 ///   Orbit.exe --list файлы…          — какие пункты есть на каждом колесе;
-///   Orbit.exe --run id файлы…        — выполнить пункт и вывести пути результатов.
+///   Orbit.exe --run id файлы…        — выполнить пункт и вывести пути результатов
+///                                      (--office Auto|MicrosoftOffice|ArtCraft|LibreOffice — чем открывать Word и Excel).
 /// Код выхода 0 — успех, 1 — ошибка.
 /// </summary>
 internal static class Cli
@@ -43,10 +44,17 @@ internal static class Cli
                 else
                 {
                     var op = operations.FirstOrDefault(o => o.Id == args[1]) ?? throw new ArgumentException($"Нет операции «{args[1]}».");
-                    var items = args.Skip(2).Select(p => new FileItem(p)).ToList();
+                    var settings = new Settings();
+                    var rest = args.Skip(2).ToList();
+                    if (rest.IndexOf("--office") is var at and >= 0 && at + 1 < rest.Count)
+                    {
+                        settings.Office = Enum.Parse<OfficeEngine>(rest[at + 1], ignoreCase: true);
+                        rest.RemoveRange(at, 2);
+                    }
+                    var items = rest.Select(p => new FileItem(p)).ToList();
                     if (!op.AppliesTo(items))
                         throw new ArgumentException($"«{op.Id}» не подходит для этих файлов.");
-                    var context = new JobContext { Settings = new Settings() };
+                    var context = new JobContext { Settings = settings };
                     var results = await op.Run(items, context);
                     foreach (var result in results)
                         output.WriteLine(result);
