@@ -95,5 +95,10 @@ src/Orbit/
 installer/Orbit.iss    установщик Inno Setup (галочки автозапуска и контекстного меню)
 ```
 
+## Авторы
+
+- [@kolyaka6969-ops](https://github.com/kolyaka6969-ops)
+- [@weightlu](https://github.com/weightlu)
+
 Идея кругового меню при перетаскивании — из проекта [Sweetch](https://github.com/krllmrzv/Sweetch) (MIT);
 код Orbit написан заново. См. `LICENSE` и `THIRD-PARTY-NOTICES.md`.
