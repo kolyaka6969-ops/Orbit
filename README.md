@@ -15,8 +15,9 @@
 | --- | --- |
 | **[Orbit 1.1.0](https://github.com/kolyaka6969-ops/Orbit/releases/latest/download/Orbit-1.1.0-Setup-x64.exe)** | Windows 11 и Windows 10 с последними обновлениями |
 | **[Orbit 1.1.0 для Windows 10 22H2](https://github.com/kolyaka6969-ops/Orbit/releases/latest/download/Orbit-1.1.0-Win10-22H2-Setup-x64.exe)** | Windows 10 22H2 без обновлений — если обычная версия при запуске падает с «Unknown Hard Error» |
+| **[Orbit 1.1.0 для macOS](https://github.com/kolyaka6969-ops/Orbit/releases/latest/download/Orbit-1.1.0-macOS.dmg)** | macOS 13 и новее, Apple Silicon и Intel — [подробнее](#macos) |
 
-[Все релизы](https://github.com/kolyaka6969-ops/Orbit/releases). Только x64, права администратора не нужны.
+[Все релизы](https://github.com/kolyaka6969-ops/Orbit/releases). Для Windows — только x64, права администратора не нужны.
 Версии ставятся друг поверх друга, настройки сохраняются.
 
 Версия для Windows 10 22H2 собрана без защиты стека CET: в Windows 10 без обновлений 2023 года .NET с ней не
@@ -26,7 +27,7 @@
 
 Нативная версия для macOS 13 и новее (Apple Silicon и Intel) лежит в папке [`macos/`](macos) — Swift, AppKit и
 системные движки macOS. Образ `Orbit-<версия>-macOS.dmg` собирает GitHub Actions (вкладка Actions → macOS →
-артефакт `Orbit-macOS`) или сценарий `macos/build.sh` на любом Mac с Xcode.
+артефакт `Orbit-macOS`), готовый образ — в [релизе](https://github.com/kolyaka6969-ops/Orbit/releases/latest/download/Orbit-1.1.0-macOS.dmg). Собрать самому можно сценарием `macos/build.sh` на любом Mac с Xcode.
 
 - Перетащите Orbit в «Программы». Приложение подписано без сертификата Apple, поэтому при первом запуске
   откройте его правым щелчком → «Открыть» (или `xattr -dr com.apple.quarantine /Applications/Orbit.app`).
