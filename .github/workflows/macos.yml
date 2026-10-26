@@ -20,6 +20,13 @@ jobs:
           chmod +x macos/build.sh
           macos/build.sh
 
+      - name: Smoke test (launches and keeps running)
+        run: |
+          open macos/build/Orbit.app
+          sleep 8
+          pgrep -x Orbit
+          pkill -x Orbit || true
+
       - uses: actions/upload-artifact@v4
         with:
           name: Orbit-macOS

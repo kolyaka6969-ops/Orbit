@@ -146,8 +146,8 @@ enum MediaBackend {
         var rate = UInt32(bitrate)
         AudioConverterSetProperty(converter, kAudioConverterEncodeBitRate, UInt32(MemoryLayout<UInt32>.size), &rate)
         // Пустая конфигурация заставляет ExtAudioFile пересоздать кодировщик с новым битрейтом.
-        var config: CFArray?
-        ExtAudioFileSetProperty(file, kExtAudioFileProperty_ConverterConfig, UInt32(MemoryLayout<CFArray?>.size), &config)
+        var config: UnsafeRawPointer? // CFArrayRef = NULL
+        ExtAudioFileSetProperty(file, kExtAudioFileProperty_ConverterConfig, UInt32(MemoryLayout<UnsafeRawPointer?>.size), &config)
     }
 
     // MARK: видео
