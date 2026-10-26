@@ -1,0 +1,27 @@
+name: macOS
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "macos/**"
+      - "src/Orbit/Assets/Orbit.png"
+      - ".github/workflows/macos.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Orbit.app and .dmg
+        run: |
+          chmod +x macos/build.sh
+          macos/build.sh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Orbit-macOS
+          path: macos/build/*.dmg
+          if-no-files-found: error
