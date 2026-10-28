@@ -89,5 +89,8 @@ public sealed class Operation
     /// <summary>Мгновенное действие (копирование пути и т. п.): без полосы прогресса.</summary>
     public bool Instant { get; init; }
 
+    /// <summary>Открывает своё окно (редактор): панель с прогрессом не нужна, а закрытие без сохранения — не новость.</summary>
+    public bool Interactive { get; init; }
+
     public override string ToString() => Id;
 }

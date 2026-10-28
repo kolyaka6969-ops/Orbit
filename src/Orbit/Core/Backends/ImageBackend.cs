@@ -170,6 +170,14 @@ public static class ImageBackend
         pages.Write(destination, MagickFormat.Pdf);
     }, token);
 
+    /// <summary>Картинку из редактора (PNG в памяти) — в нужный формат с обычным качеством.</summary>
+    public static Task SaveAsync(byte[] png, string destination, string format, int quality, CancellationToken token) => Task.Run(() =>
+    {
+        using var image = new MagickImage(png);
+        Prepare(image, format, quality);
+        image.Write(destination, FormatOf(format));
+    }, token);
+
     /// <summary>PNG-байты для OCR и буфера обмена.</summary>
     public static byte[] ToPng(string path, uint maxSide)
     {

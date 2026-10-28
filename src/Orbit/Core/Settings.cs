@@ -79,6 +79,9 @@ public sealed class Settings
 
     public VideoQuality Video { get; set; } = VideoQuality.Balanced;
 
+    /// <summary>Куда видеоредактор сохранял в прошлый раз — с этой папки откроется «Сохранить».</summary>
+    public string? VideoSaveFolder { get; set; }
+
     public int PdfDpi { get; set; } = 150;
 
     public OfficeEngine Office { get; set; } = OfficeEngine.Auto;

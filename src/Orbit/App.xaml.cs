@@ -25,7 +25,7 @@ public partial class App : Application
         base.OnStartup(e);
         var args = e.Args;
 
-        if (args.Length > 0 && args[0] is "--run" or "--list" or "--probe" or "--render")
+        if (args.Length > 0 && args[0] is "--run" or "--list" or "--probe" or "--render" or "--video-edit" or "--frame" or "--join")
         {
             Cli.Run(this, args);
             return;
@@ -73,11 +73,15 @@ public partial class App : Application
         // Панель создаётся при первом показе: в фоне (автозапуск) она может так и не понадобиться.
         _jobs.Started += job =>
         {
+            if (job.Operation is { Interactive: true })
+                return;
             if (Settings.ShowNotifications || job.State == JobState.Info)
                 (_flyout ??= new JobsFlyout(_jobs)).ShowPanel();
         };
         _jobs.Finished += job =>
         {
+            if (job.Operation is { Interactive: true } && job.State == JobState.Canceled)
+                return;
             if (Settings.ShowNotifications || job.State == JobState.Failed)
                 (_flyout ??= new JobsFlyout(_jobs)).ShowPanel();
             else

@@ -16,7 +16,9 @@ internal static class Preview
     public static async Task RenderAllAsync(App app, string folder, IReadOnlyList<string> samples)
     {
         Directory.CreateDirectory(folder);
-        var items = samples.Select(p => new FileItem(p)).ToList();
+        var all = samples.Select(p => new FileItem(p)).ToList();
+        // Круги и панель — для файлов того же типа, что и первый: у картинки и видео вместе общих пунктов нет
+        var items = all.Where(i => i.Kind == all[0].Kind).ToList();
         foreach (var dark in new[] { false, true })
         {
             ThemeManager.Apply(dark ? ThemeChoice.Dark : ThemeChoice.Light);
@@ -63,6 +65,11 @@ internal static class Preview
             await SaveAsync(Detach(flyout), 392, double.NaN, Path.Combine(folder, $"jobs-{suffix}.png"), transparent: true);
 
             await SaveAsync(Detach(new TrayMenu(app)), 292, double.NaN, Path.Combine(folder, $"tray-{suffix}.png"), transparent: true);
+
+            if (all.FirstOrDefault(Formats.IsPicture) is { } picture)
+                await SaveAsync(Detach(Editor.ImageEditorWindow.ForPreview(picture, dark)), 1180, 800, Path.Combine(folder, $"editor-{suffix}.png"));
+            if (all.FirstOrDefault(i => i.Kind == FileKind.Video) is { } video)
+                await SaveAsync(Detach(await Editor.VideoEditorWindow.ForPreviewAsync(video)), 1100, 780, Path.Combine(folder, $"video-editor-{suffix}.png"));
         }
     }
 

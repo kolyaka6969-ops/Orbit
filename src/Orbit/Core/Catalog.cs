@@ -21,6 +21,7 @@ public static class Glyphs
     public const string Mirror = "";
     public const string Color = "";
     public const string Clear = "";
+    public const string Edit = "";
     public const string Crop = "";
     public const string Text = "";
     public const string Merge = "";
@@ -77,6 +78,21 @@ public static class Catalog
                     tmp => ImageBackend.ConvertAsync(item.Path, tmp, target, ctx.Settings.ImageQuality, ctx.Token))],
                 subtitle));
         }
+
+        // Первым в круге инструментов — на «12 часах»
+        ops.Add(new Operation
+        {
+            Id = "image.editor",
+            Wheel = WheelKind.Tools,
+            Label = "Редактор",
+            Subtitle = "рисовать",
+            Glyph = Glyphs.Edit,
+            Instant = true,
+            Interactive = true,
+            // Несколько картинок открываются уже поставленными в ряд
+            AppliesTo = items => items.Count is >= 1 and <= 4 && items.All(Formats.IsPicture),
+            Run = UI.Editor.ImageEditorWindow.EditAsync,
+        });
 
         ops.Add(PerFile("image.compress", WheelKind.Tools, "Сжать", Glyphs.Shrink, Formats.IsPicture,
             async (item, ctx, _) =>
@@ -166,6 +182,19 @@ public static class Catalog
                 "только звук"));
         }
 
+        // Первым в круге инструментов для видео
+        ops.Add(new Operation
+        {
+            Id = "video.editor",
+            Wheel = WheelKind.Tools,
+            Label = "Редактор",
+            Subtitle = "обрезать",
+            Glyph = Glyphs.Edit,
+            Instant = true,
+            Interactive = true,
+            AppliesTo = items => items.Count == 1 && items[0].Kind == FileKind.Video,
+            Run = UI.Editor.VideoEditorWindow.EditAsync,
+        });
         Video(ops, "video.compress", "Сжать", Glyphs.Shrink, "H.264", "сжато", _ => new(BitsPerPixel: 0.045));
         Video(ops, "video.720", "720p", Glyphs.Shrink, "уменьшить", "720p", ctx => new(MaxHeight: 720, BitsPerPixel: MediaBackend.BitsPerPixel(ctx.Settings.Video)));
         Video(ops, "video.mute", "Без звука", Glyphs.Mute, "убрать дорожку", "без звука", ctx => new(BitsPerPixel: MediaBackend.BitsPerPixel(ctx.Settings.Video), Mute: true));

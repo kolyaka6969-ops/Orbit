@@ -4,7 +4,7 @@
 # Если установлен Inno Setup 6 — ещё установщики artifacts/Orbit-<версия>-Setup-x64.exe
 # и artifacts/Orbit-<версия>-Win10-22H2-Setup-x64.exe и их контрольные суммы в artifacts/SHA256SUMS.txt.
 param(
-    [string]$Version = '1.1.0',
+    [string]$Version = '1.2.0',
     [switch]$NoInstaller
 )
 $ErrorActionPreference = 'Stop'

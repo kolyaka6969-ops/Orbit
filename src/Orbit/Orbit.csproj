@@ -11,13 +11,15 @@
     <RootNamespace>Orbit</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Assets\Orbit.ico</ApplicationIcon>
-    <Version>1.1.0</Version>
+    <Version>1.2.0</Version>
     <Product>Orbit</Product>
     <Description>Конвертер файлов с круговым меню для Windows 11</Description>
     <Copyright>© 2026 Orbit</Copyright>
     <SatelliteResourceLanguages>ru;en</SatelliteResourceLanguages>
     <!-- Проводник отдаёт выделение через COM (Shell.Application). -->
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+    <!-- Видеоредактор читает и пишет кадры через Media Foundation напрямую (Core/Backends/Mf.cs). -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <!--

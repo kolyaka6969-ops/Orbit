@@ -13,9 +13,9 @@
 
 | Версия | Для какой Windows |
 | --- | --- |
-| **[Orbit 1.1.0](https://github.com/kolyaka6969-ops/Orbit/releases/latest/download/Orbit-1.1.0-Setup-x64.exe)** | Windows 11 и Windows 10 с последними обновлениями |
-| **[Orbit 1.1.0 для Windows 10 22H2](https://github.com/kolyaka6969-ops/Orbit/releases/latest/download/Orbit-1.1.0-Win10-22H2-Setup-x64.exe)** | Windows 10 22H2 без обновлений — если обычная версия при запуске падает с «Unknown Hard Error» |
-| **[Orbit 1.1.0 для macOS](https://github.com/kolyaka6969-ops/Orbit/releases/latest/download/Orbit-1.1.0-macOS.dmg)** | macOS 13 и новее, Apple Silicon и Intel — [подробнее](#macos) |
+| **[Orbit 1.2.0](https://github.com/kolyaka6969-ops/Orbit/releases/latest/download/Orbit-1.2.0-Setup-x64.exe)** | Windows 11 и Windows 10 с последними обновлениями |
+| **[Orbit 1.2.0 для Windows 10 22H2](https://github.com/kolyaka6969-ops/Orbit/releases/latest/download/Orbit-1.2.0-Win10-22H2-Setup-x64.exe)** | Windows 10 22H2 без обновлений — если обычная версия при запуске падает с «Unknown Hard Error» |
+| **[Orbit 1.1.0 для macOS](https://github.com/kolyaka6969-ops/Orbit/releases/download/v1.1.0/Orbit-1.1.0-macOS.dmg)** | macOS 13 и новее, Apple Silicon и Intel — [подробнее](#macos) |
 
 [Все релизы](https://github.com/kolyaka6969-ops/Orbit/releases). Для Windows — только x64, права администратора не нужны.
 Версии ставятся друг поверх друга, настройки сохраняются.
@@ -27,7 +27,7 @@
 
 Нативная версия для macOS 13 и новее (Apple Silicon и Intel) лежит в папке [`macos/`](macos) — Swift, AppKit и
 системные движки macOS. Образ `Orbit-<версия>-macOS.dmg` собирает GitHub Actions (вкладка Actions → macOS →
-артефакт `Orbit-macOS`), готовый образ — в [релизе](https://github.com/kolyaka6969-ops/Orbit/releases/latest/download/Orbit-1.1.0-macOS.dmg). Собрать самому можно сценарием `macos/build.sh` на любом Mac с Xcode.
+артефакт `Orbit-macOS`), готовый образ — в [релизе 1.1.0](https://github.com/kolyaka6969-ops/Orbit/releases/download/v1.1.0/Orbit-1.1.0-macOS.dmg). Собрать самому можно сценарием `macos/build.sh` на любом Mac с Xcode.
 
 - Перетащите Orbit в «Программы». Приложение подписано без сертификата Apple, поэтому при первом запуске
   откройте его правым щелчком → «Открыть» (или `xattr -dr com.apple.quarantine /Applications/Orbit.app`).
@@ -43,7 +43,7 @@
 | Клавиша при перетаскивании | Круг | Что внутри |
 | --- | --- | --- |
 | **Shift** | Конвертация | PNG, JPG, WEBP, AVIF, TIFF, GIF, ICO, PDF · MP3, M4A, WAV, FLAC, WMA · MP4, WMV · PDF → картинки, DOCX · документы Word → PDF, DOCX, DOC, RTF, ODT, TXT · таблицы Excel → PDF, XLSX, XLS, ODS, CSV · распаковка архивов |
-| **Ctrl** | Инструменты | сжать, уменьшить, «для интернета», повернуть, отразить, ч/б, квадрат, без метаданных, распознать текст, объединить в PDF, разделить PDF, видео 720p и без звука, ZIP, SHA-256 |
+| **Ctrl** | Инструменты | редактор картинок (обрезка рамкой, кругом и пером, кисть, маркер, стрелки и рамки, текст, мозаика, добавить изображение сбоку или поверх, поворот), видеоредактор со шкалой времени как в монтажных программах (клипы обрезаются за края, разрезаются, переставляются и склеиваются с другими роликами; ключевые кадры масштаба, позиции, поворота, непрозрачности и громкости, как в After Effects и CapCut; приблизить часть кадра, без звука, 1080p или 720p, кадр в PNG, сохранение в выбранную папку), сжать, уменьшить, «для интернета», повернуть, отразить, ч/б, квадрат, без метаданных, распознать текст, объединить в PDF, разделить PDF, видео 720p и без звука, ZIP, SHA-256 |
 | **Alt** | Действия | копировать путь, в буфер обмена, на рабочий стол, переместить, копия, в корзину |
 
 Без мыши: выделите файлы в Проводнике и нажмите **Ctrl + Alt + Пробел**. Ещё есть пункт «Открыть в Orbit»
@@ -93,7 +93,7 @@
 
 ## Установка
 
-Запустите `Orbit-1.1.0-Setup-x64.exe` (или `Orbit-1.1.0-Win10-22H2-Setup-x64.exe` для Windows 10 22H2 без обновлений). Права администратора не нужны: программа ставится для текущего пользователя
+Запустите `Orbit-1.2.0-Setup-x64.exe` (или `Orbit-1.2.0-Win10-22H2-Setup-x64.exe` для Windows 10 22H2 без обновлений). Права администратора не нужны: программа ставится для текущего пользователя
 в `%LOCALAPPDATA%\Programs\Orbit`, добавляется в меню «Пуск» и удаляется через «Параметры → Приложения».
 Внутри уже есть всё нужное (.NET, ImageMagick), отдельно ничего ставить не надо. Нужна Windows 10 1809+ или Windows 11, x64.
 
@@ -108,7 +108,7 @@
 ```
 
 Результат: `publish/` и `publish-win10/` (папки программы, обычная и для Windows 10 22H2),
-`artifacts/Orbit-1.1.0-Setup-x64.exe` и `artifacts/Orbit-1.1.0-Win10-22H2-Setup-x64.exe` (установщики), `artifacts/SHA256SUMS.txt`.
+`artifacts/Orbit-1.2.0-Setup-x64.exe` и `artifacts/Orbit-1.2.0-Win10-22H2-Setup-x64.exe` (установщики), `artifacts/SHA256SUMS.txt`.
 Ключ `-NoInstaller` собирает только программу, `-Version 1.2.0` меняет номер версии.
 
 Проверка всех операций на тестовых файлах (картинки, голос и ролик берутся из самой Windows):
